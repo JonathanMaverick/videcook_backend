@@ -21,20 +21,37 @@ const profilePictureStorage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: profilePictureStorage });
+const recipeImageStorage = multer.diskStorage({
+  destination: path.join(__dirname, "public", "uploads", "recipes"),
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
 
-app.post("/upload", upload.single("profilePicture"), (req, res) => {
+const profilePictureUpload = multer({ storage: profilePictureStorage });
+const recipeImageUpload = multer({ storage: recipeImageStorage });
+
+app.post(
+  "/upload",
+  profilePictureUpload.single("profilePicture"),
+  (req, res) => {
+    if (!req.file) {
+      return res.status(400).send("No file uploaded.");
+    }
+
+    res.send({ filePath: `/uploads/profilePicture/${req.file.filename}` });
+  }
+);
+
+app.post("/add-recipe", recipeImageUpload.single("recipeImage"), (req, res) => {
   if (!req.file) {
     return res.status(400).send("No file uploaded.");
   }
 
-  res.send({ filePath: `/uploads/profilePicture/${req.file.filename}` });
+  res.send({ filePath: `/uploads/recipes/${req.file.filename}` });
 });
 
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "public", "uploads"))
-);
+app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
