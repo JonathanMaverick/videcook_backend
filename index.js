@@ -4,7 +4,7 @@ const path = require("path");
 const cors = require("cors");
 
 const app = express();
-const port = 5000;
+const port = 3000;
 
 app.use(
   cors({
@@ -43,7 +43,7 @@ app.post(
   }
 );
 
-app.post("/add-recipe", recipeImageUpload.single("recipeImage"), (req, res) => {
+app.post("/recipe-upload", recipeImageUpload.single("recipeImage"), (req, res) => {
   if (!req.file) {
     return res.status(400).send("No file uploaded.");
   }
